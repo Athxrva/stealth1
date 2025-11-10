@@ -38,7 +38,7 @@ export default async function handleFileUpload(req,res){
 import uploadFileToGCP from '../services/gcpService.js';
 import parseFile from '../utils/fileParser.js';
 import generateEmbeddings from '../services/embeddingService.js';
-import storeEmbedding from '../services/vectorStoreService.js';
+import { storeEmbedding } from '../services/vectorStoreService.js';
 
 export default async function handleFileUpload(req, res) {
   try {

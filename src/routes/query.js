@@ -9,7 +9,7 @@ const queryLimiter = rateLimit({
     windowMs: 1 * 60 * 1000,
     max: 10,
     message: {
-        error: "Too many uploads, please wait for 1 min"
+        error: "Too many queries, please wait for 1 min"
     },
     standardHeaders: true,
     legacyHeaders: false,

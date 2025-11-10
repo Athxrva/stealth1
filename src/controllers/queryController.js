@@ -1,6 +1,6 @@
 
 import  generateEmbeddings  from "../services/embeddingService.js";
-import  searchRelevantDocs  from "../services/vectorStoreService.js";
+import  { searchRelevantDocs } from "../services/vectorStoreService.js";
 import  generateAnswerFromContext  from "../services/llmService.js";
 
 
@@ -15,7 +15,9 @@ export default async function handleQuery(req,res){
 
         const queryVector = await generateEmbeddings(question);
 
-        const relevantDocs = await searchRelevantDocs(queryVector,3);
+        
+
+        const relevantDocs = await searchRelevantDocs(queryVector);
 
         const context = relevantDocs.map((d,i) => `Document ${i+1}:\n${d.text}`).join("\n\n");
 

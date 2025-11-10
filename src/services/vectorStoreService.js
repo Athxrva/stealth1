@@ -51,29 +51,47 @@ if (!PINECONE_API_KEY || !PINECONE_INDEX) {
 // Initialize Pinecone client with correct property
 const client = new Pinecone.Pinecone({
   apiKey: PINECONE_API_KEY,
-  controllerHostUrl: `https://${PINECONE_INDEX}-${PINECONE_ENVIRONMENT}.svc.pinecone.io`
 });
 
 // Access the index
-const index = client.Index(PINECONE_INDEX);
+const index = client.Index(PINECONE_INDEX, 
+    "https://my-vectordb-v4oukp8.svc.aped-4627-b74a.pinecone.io",
+);
 
 console.log("✅ Pinecone client initialized successfully");
 
 // Store embedding
-export default async function storeEmbedding(docName, embedding, gcpUrl, text) {
+export async function storeEmbedding(docName, embedding, gcpUrl, text) {
+
+    const vector = Array.isArray(embedding[0]) ? embedding[0] : embedding;
+    //console.log("vector to store from StoreEmbedding ", vector);
+
   await index.upsert([
     {
       id: docName,
-      values: embedding,
+      values: vector,
       metadata: { source: gcpUrl, text },
     },
   ]);
 }
 
 // Query index
-export async function searchRelevantDocs(queryVector, topK = 3) {
+export async function searchRelevantDocs(queryVector) {
+    const topK = 3;
+
+    if (!Array.isArray(queryVector)) {
+        throw new Error(`Query vector must be an array, got: ${typeof queryVector}`);
+      }
+    
+      // If nested, flatten
+      const vec = Array.isArray(queryVector[0]) ? queryVector[0] : queryVector;
+    
+      if (!vec.every((v) => typeof v === "number")) {
+        throw new Error("Query vector must be a flat array of numbers");
+      }
+
   const res = await index.query({
-    vector: queryVector,
+    vector: vec,
     topK,
     includeMetadata: true,
   });
